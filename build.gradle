@@ -1,0 +1,31 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.10'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+    compile 'io.netty:netty-all:4.0.25.Final'
+}
+
+
+idea {
+    module {
+        iml {
+            withXml {
+                def module = it.asNode()
+                module.component.content.sourceFolder.each() {
+                    if (it.@url.endsWith('resources')) {
+                        def isTest = it.@isTestSource.toBoolean()
+                        def type = isTest ? 'java-test-resource' : 'java-resource'
+                        it.@type = type
+                        it.attributes().remove('isTestSource')
+                    }
+                }
+            }
+        }
+    }
+}
